@@ -49,3 +49,28 @@ exports.userLogin=async(req,res)=>{
 }
 }
 
+//google login
+exports.googleUserLogin=async(req,res)=>{
+    const{username,email,password,profile}=req.body
+    try{
+        const existingUser=await User.findOne({email})
+        if(existingUser){      
+            // token generation
+            const token =jwt.sign({userMail:existingUser.email,role:existingUser.role},process.env.jwtkey)
+            console.log(token);
+             res.status(200).json({message:"login success",existingUser,token});
+        }
+        else{
+            const newUser= new User({username,email,password,profile})
+            await newUser.save()
+            // token generation
+            const token =jwt.sign({userMail:newUser.email,role:newUser.role},process.env.jwtkey)
+            console.log(token);
+            res.status(200).json({message:"user added successfully",newUser,token});
+        }
+    }
+    catch (error) {
+     res.status(500).json({ error: " error" });
+}
+
+}

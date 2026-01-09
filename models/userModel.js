@@ -18,6 +18,11 @@ const userSchema = mongoose.Schema({
     type: String,
     default: "BugBound User",
   },
+  
+  profile:{
+    type:String,
+    required:false
+  }
 });
 
 module.exports = mongoose.model("User", userSchema);
