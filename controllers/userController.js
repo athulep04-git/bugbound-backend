@@ -26,14 +26,14 @@ exports.userRegister=async(req,res)=>{
 exports.userLogin=async(req,res)=>{
     const{email,password}=req.body
     try{
-        const activeUser=await User.findOne({email})
-        if(activeUser){
-        if(activeUser.password==password){
+        const existingUser=await User.findOne({email})
+        if(existingUser){
+        if(existingUser.password==password){
             // token generation
-            const token =jwt.sign({userMail:activeUser.email,role:activeUser.role},process.env.jwtkey)
+            const token =jwt.sign({userMail:existingUser.email,role:existingUser.role},process.env.jwtkey)
             console.log(token);
             
-             res.status(200).json({message:"login success",activeUser,token});
+             res.status(200).json({message:"login success",existingUser,token});
         }
         else{
             res.status(401).json("password mismatch")

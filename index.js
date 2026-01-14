@@ -13,6 +13,7 @@ server.use(cors());
 server.use(express.json());
 server.use(appMiddleware)
 server.use(route);
+server.use('/uploads',express.static('./uploads'))
 
 const PORT = 3000 || process.env.PORT  ;
 

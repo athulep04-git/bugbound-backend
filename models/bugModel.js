@@ -13,7 +13,7 @@ const bugSchema = new mongoose.Schema({
     required: true,
   },
 
-  screenshot: {
+  UploadedImages: {
     type: String,
     default: "",
   },
