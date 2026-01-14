@@ -19,7 +19,7 @@ exports.addBug=async(req,res)=>{
             res.status(402).json("Bug already exist")
         }
         else{
-            const newBug=new bugs({title,description,priority,category,fixBudget,userMail})
+            const newBug=new bugs({title,description,priority,category,fixBudget,UploadedImages,userMail})
             await newBug.save()
             res.status(200).json("Add bug success")
         }

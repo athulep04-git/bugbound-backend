@@ -33,8 +33,8 @@ const bugSchema = new mongoose.Schema({
   },
 
   UploadedImages: {
-    type: String,
-    default: "",
+    type: Array,
+    required: true,
   },
 
   priority: {
