@@ -1,6 +1,25 @@
 // import mongoose
 const mongoose = require("mongoose");
 
+
+const proposalSchema = new mongoose.Schema(
+  {
+    debuggerMail: {
+      type: String,
+      required: true,
+    },
+    message: {
+      type: String,
+      required: true,
+    },
+    proposedAmount: {
+      type: Number,
+      default: 0,
+    },
+  },
+  { timestamps: true }
+);
+
 // Create schema and model
 const bugSchema = new mongoose.Schema({
   title: {
@@ -44,6 +63,17 @@ const bugSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-});
+    assignedTo: {
+      type: String,
+      default: "",
+    },
+     proposals: {
+      type: [proposalSchema],
+      default: [],
+    },
+    
+},
+{ timestamps: true }
+);
 
 module.exports = mongoose.model("bugs",bugSchema);

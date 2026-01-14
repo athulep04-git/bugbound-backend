@@ -22,7 +22,20 @@ const userSchema = mongoose.Schema({
   profile:{
     type:String,
     required:false
-  }
+  },
+  points: {
+    type: Number,
+    default: 0,
+  },
+  rating: {
+    type: Number,
+    default: 0,
+  },
+  totalFixes: {
+    type: Number,
+    default: 0,
+  },
+
 });
 
 module.exports = mongoose.model("User", userSchema);
