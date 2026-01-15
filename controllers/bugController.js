@@ -1,5 +1,6 @@
 const bugs=require('../models/bugModel')
 
+//add a bug
 exports.addBug=async(req,res)=>{
     console.log("Inside add bug");
     console.log(req.body);
@@ -31,11 +32,11 @@ exports.addBug=async(req,res)=>{
     // res.send("Request recieved")
 }
 
-exports.getBugs = async(req, res) => {
+//get all bugs
 
-  
+exports.getBugs = async(req, res) => {
   try {
-    const allBugs = await bugs.find();
+    const allBugs = await bugs.find().sort({ _id:-1});
     res.status(200).json(allBugs);
   } catch (error) {
     res.status(500).json(error);
