@@ -11,5 +11,5 @@ router.post('/api/googlelogin',userController.googleUserLogin)
 
 //add bug
 router.post('/api/addbug',jwtMiddleware,multerConfig.array('UploadedImages',3),bugController.addBug)
-
+router.get('/api/getbugs', jwtMiddleware,bugController.getBugs);
 module.exports = router;

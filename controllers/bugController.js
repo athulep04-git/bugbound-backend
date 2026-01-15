@@ -30,3 +30,14 @@ exports.addBug=async(req,res)=>{
     }
     // res.send("Request recieved")
 }
+
+exports.getBugs = async(req, res) => {
+
+  
+  try {
+    const allBugs = await bugs.find();
+    res.status(200).json(allBugs);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
