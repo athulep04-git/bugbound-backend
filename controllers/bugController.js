@@ -42,6 +42,7 @@ exports.getBugs = async(req, res) => {
   }
 };
 
+//get details of selected bug
 exports.getBugDetails = async (req, res) => {
   const { id } = req.params;
   try {
@@ -56,4 +57,14 @@ exports.getBugDetails = async (req, res) => {
     res.status(500).json("error"+error)
   }
 }
-    
+
+//show bugs posted by logged in user
+exports.getMyBugs=async(req,res)=>{
+  try {
+    const userMail=req.payload;
+    const myBugs=await bugs.find({ userMail}).sort({ createdAt: -1 });
+    res.status(200).json(myBugs);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};

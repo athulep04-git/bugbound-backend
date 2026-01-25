@@ -29,3 +29,27 @@ exports.getBounties =async(req,res)=>{
     res.status(500).json(error);
   }
 };
+//get bounty details when clicked
+exports.getSingleBounty = async(req,res)=>{
+  const {id}=req.params;
+  try{
+    const bounty=await bounties.findById(id);
+    if (!bounty){
+      return res.status(404).json("Bounty not found");
+    }
+    res.status(200).json(bounty);
+    }catch(error){
+    res.status(500).json(error);
+  }
+};
+
+//get posted bounties of user
+exports.getMyBounties =async(req,res)=>{
+  try{
+    const userMail=req.payload;
+    const myBounties=await bounties.find({userMail});
+    res.status(200).json(myBounties);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
