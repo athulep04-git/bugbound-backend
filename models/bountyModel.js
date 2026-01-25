@@ -7,20 +7,20 @@ const bountySchema = new mongoose.Schema(
       required: true,
     },
 
+    category: {
+      type: String,
+      required: true,
+      default: "Frontend",
+    },
+
     description: {
       type: String,
       required: true,
     },
 
-    UploadedImages: {
-      type: Array,
-      required: true,
-    },
-
-    category: {
+    projectUrl: {
       type: String,
       required: true,
-      default: "Web App",
     },
 
     reward: {
@@ -28,10 +28,14 @@ const bountySchema = new mongoose.Schema(
       required: true,
     },
 
-    difficulty: {
+    rules: {
       type: String,
+      default: "",
+    },
+
+    UploadedImages: {
+      type: Array,
       required: true,
-      default: "Easy",
     },
 
     status: {
