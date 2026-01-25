@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const bugSchema = new mongoose.Schema(
+const bountySchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -17,21 +17,21 @@ const bugSchema = new mongoose.Schema(
       required: true,
     },
 
-    priority: {
-      type: String,
-      required: true,
-      default: "Low",
-    },
-
     category: {
       type: String,
       required: true,
-      default: "Frontend",
+      default: "Web App",
     },
 
-    fixBudget: {
+    reward: {
       type: Number,
       required: true,
+    },
+
+    difficulty: {
+      type: String,
+      required: true,
+      default: "Easy",
     },
 
     status: {
@@ -43,13 +43,8 @@ const bugSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
-    assignedTo: {
-      type: String,
-      default: "",
-    },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("bugs", bugSchema);
+module.exports = mongoose.model("bounties", bountySchema);
