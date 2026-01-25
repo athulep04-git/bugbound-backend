@@ -29,7 +29,6 @@ exports.addBug=async(req,res)=>{
     {
     res.status(500).json(error);
     }
-    // res.send("Request recieved")
 }
 
 //get all bugs
@@ -42,3 +41,19 @@ exports.getBugs = async(req, res) => {
     res.status(500).json(error);
   }
 };
+
+exports.getBugDetails = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const bug=await bugs.findById(id);
+    if (!bug){
+      return res.status(404).json("Bug not found");
+    }
+    else{
+      res.status(200).json(bug);
+    }
+  } catch (error){
+    res.status(500).json("error"+error)
+  }
+}
+    
