@@ -84,7 +84,7 @@ exports.editBug=async(req,res)=>{
       req.body,
       {new:true}
     )
-    res.status(200).json(updatedBug)
+    res.status(200).json({message:"bug updated",updatedBug})
   } catch (err) {
     res.status(500).json(err)
   }

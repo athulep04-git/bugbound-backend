@@ -25,5 +25,5 @@ router.post("/api/addbounty",jwtMiddleware,multerConfig.array("UploadedImages",3
 router.get("/api/getbounties", jwtMiddleware, bountyController.getBounties);
 router.get("/api/getbounty/:id", jwtMiddleware, bountyController.getSingleBounty);
 router.get("/api/mybounties", jwtMiddleware, bountyController.getMyBounties);
-
+router.put("/api/editbounty/:id", jwtMiddleware, bountyController.editBounty);
 module.exports = router;

@@ -53,3 +53,23 @@ exports.getMyBounties =async(req,res)=>{
     res.status(500).json(error);
   }
 };
+
+//edit bounty
+exports.editBounty = async (req, res)=>{
+  const {id}=req.params;
+  const userMail=req.payload;
+  try{
+    const bounty=await bounties.findOne({ _id:id,userMail});
+    if(!bounty){
+      return res.status(403).json("Unauthorized or bounty not found");
+    }
+    const updatedBounty = await bounties.findByIdAndUpdate(
+      id,
+      req.body,
+      {new:true}
+    );
+    res.status(200).json({message:"bounty updated",updatedBounty});
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
