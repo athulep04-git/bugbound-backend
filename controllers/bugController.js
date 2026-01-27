@@ -89,3 +89,19 @@ exports.editBug=async(req,res)=>{
     res.status(500).json(err)
   }
 }
+
+//delete bug
+exports.deleteBug=async(req,res)=>{
+  const{id}=req.params;
+  const userMail=req.payload;
+  try {
+    const bug=await bugs.findOne({_id:id,userMail});
+    if(!bug){
+      return res.status(403).json("Unauthorized or bug not found");
+    }
+    await bugs.findByIdAndDelete(id);
+    res.status(200).json("Bug deleted successfully");
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};

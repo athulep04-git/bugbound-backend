@@ -19,7 +19,7 @@ router.get('/api/getbugs', jwtMiddleware,bugController.getBugs);
 router.get("/api/getbug/:id", jwtMiddleware, bugController.getBugDetails);
 router.get("/api/mybugs", jwtMiddleware, bugController.getMyBugs);
 router.put("/api/editbug/:id", jwtMiddleware, bugController.editBug);
-
+router.delete("/api/deletebug/:id", jwtMiddleware, bugController.deleteBug);
 //bounty
 router.post("/api/addbounty",jwtMiddleware,multerConfig.array("UploadedImages",3),bountyController.addBounty);
 router.get("/api/getbounties", jwtMiddleware, bountyController.getBounties);
