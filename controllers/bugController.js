@@ -68,3 +68,24 @@ exports.getMyBugs=async(req,res)=>{
     res.status(500).json(error);
   }
 };
+
+//edit bug 
+exports.editBug=async(req,res)=>{
+  const {id}=req.params
+  const userMail=req.payload
+
+  try{
+    const bug=await bugs.findOne({_id:id,userMail})
+    if(!bug){
+      return res.status(403).json("Unauthorized or bug not found")
+    }
+    const updatedBug=await bugs.findByIdAndUpdate(
+      id,
+      req.body,
+      {new:true}
+    )
+    res.status(200).json(updatedBug)
+  } catch (err) {
+    res.status(500).json(err)
+  }
+}
