@@ -73,3 +73,62 @@ exports.googleUserLogin=async(req,res)=>{
      res.status(500).json({ error: " error" });
 }
 }
+
+//profile 
+
+exports.getUserProfile = async (req, res) => {
+  const userMail = req.payload;
+  try {
+    const user = await User.findOne({ email: userMail }).select("-password");
+    if (!user) {
+      return res.status(404).json("User not found");
+    }
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  const userMail = req.payload;
+    const {username,title,bio,github,linkedin,password} = req.body;
+  const profile = req.file? req.file.filename: req.body.profile;
+  try {
+    const updateData = {username,title,bio,github,linkedin,profile};
+    if (password && password.trim() !== "") {
+      updateData.password = password;
+    }
+    const updatedUser = await User.findOneAndUpdate(
+      { email: userMail },
+      updateData,
+      { new: true }
+    );
+    if (!updatedUser) {
+      return res.status(404).json("User not found");
+    }
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+exports.getLeaderboard = async (req, res) => {
+  try {
+    const users = await User.find(
+      { role: "BugBound User" },
+      {
+        username: 1,
+        profile: 1,
+        points: 1,
+        rating: 1,
+        totalFixes: 1,
+      }
+    )
+      .sort({ points: -1, rating: -1, totalFixes: -1 })
+      .limit(50);
+
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};

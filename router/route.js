@@ -12,6 +12,7 @@ const router = express.Router();
 router.post("/api/register", userController.userRegister);
 router.post("/api/login", userController.userLogin);
 router.post('/api/googlelogin',userController.googleUserLogin)
+router.get("/api/leaderboard", userController.getLeaderboard);
 
 //bug
 router.post('/api/addbug',jwtMiddleware,multerConfig.array('UploadedImages',3),bugController.addBug)
@@ -27,3 +28,7 @@ router.get("/api/getbounty/:id", jwtMiddleware, bountyController.getSingleBounty
 router.get("/api/mybounties", jwtMiddleware, bountyController.getMyBounties);
 router.put("/api/editbounty/:id", jwtMiddleware, bountyController.editBounty);
 module.exports = router;
+
+//profile
+router.get("/api/profile", jwtMiddleware, userController.getUserProfile);
+router.put("/api/profile",jwtMiddleware,multerConfig.single("profile"),userController.updateProfile);
