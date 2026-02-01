@@ -124,8 +124,8 @@ exports.getLeaderboard = async (req, res) => {
         totalFixes: 1,
       }
     )
-      .sort({ points: -1, rating: -1, totalFixes: -1 })
-      .limit(50);
+      .sort({ points: -1})
+      .limit(5);
 
     res.status(200).json(users);
   } catch (err) {

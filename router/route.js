@@ -3,6 +3,7 @@ const express = require("express");
 const userController = require("../controllers/userController");
 const bugController=require('../controllers/bugController');
 const bountyController = require("../controllers/bountyController");
+const proposalController=require('../controllers/proposalController')
 
 const jwtMiddleware = require("../middleware/jwtMiddleware");
 const multerConfig=require('../middleware/multerMiddleware')
@@ -32,3 +33,8 @@ module.exports = router;
 //profile
 router.get("/api/profile", jwtMiddleware, userController.getUserProfile);
 router.put("/api/profile",jwtMiddleware,multerConfig.single("profile"),userController.updateProfile);
+
+//proposal
+router.post("/api/sendproposal", jwtMiddleware, proposalController.sendProposal);
+router.get("/api/bugproposals/:bugId",jwtMiddleware,proposalController.getBugProposals);
+router.put("/api/acceptproposal/:proposalId",jwtMiddleware,proposalController.acceptProposal);
