@@ -4,7 +4,8 @@ const userController = require("../controllers/userController");
 const bugController=require('../controllers/bugController');
 const bountyController = require("../controllers/bountyController");
 const proposalController=require('../controllers/proposalController')
-
+const fixWorkspaceController=require('../controllers/fixworkspaceController')
+const adminController=require('../controllers/adminController')
 const jwtMiddleware = require("../middleware/jwtMiddleware");
 const multerConfig=require('../middleware/multerMiddleware')
 const router = express.Router();
@@ -22,6 +23,9 @@ router.get("/api/getbug/:id", jwtMiddleware, bugController.getBugDetails);
 router.get("/api/mybugs", jwtMiddleware, bugController.getMyBugs);
 router.put("/api/editbug/:id", jwtMiddleware, bugController.editBug);
 router.delete("/api/deletebug/:id", jwtMiddleware, bugController.deleteBug);
+router.get("/api/fixworkspace/:bugId",jwtMiddleware,fixWorkspaceController.getWorkspace);
+
+
 //bounty
 router.post("/api/addbounty",jwtMiddleware,multerConfig.array("UploadedImages",3),bountyController.addBounty);
 router.get("/api/getbounties", jwtMiddleware, bountyController.getBounties);
@@ -38,3 +42,9 @@ router.put("/api/profile",jwtMiddleware,multerConfig.single("profile"),userContr
 router.post("/api/sendproposal", jwtMiddleware, proposalController.sendProposal);
 router.get("/api/bugproposals/:bugId",jwtMiddleware,proposalController.getBugProposals);
 router.put("/api/acceptproposal/:proposalId",jwtMiddleware,proposalController.acceptProposal);
+router.get("/api/mytasks",jwtMiddleware,proposalController.getMyTasks);
+
+
+//admin
+router.get("/api/admin/stats",jwtMiddleware,adminController.getDashboardStats
+);

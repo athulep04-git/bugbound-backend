@@ -89,3 +89,26 @@ exports.acceptProposal = async (req, res) => {
     res.status(500).json("Server error");
   }
 };
+
+//get tasks
+exports.getMyTasks = async (req, res) => {
+  const debuggerMail = req.payload;
+
+  try {
+    const acceptedProposals = await Proposal.find({
+      debuggerMail,
+      status: "Accepted",
+    });
+
+    const bugIds = acceptedProposals.map(p => p.bugId);
+
+    const bugsList = await Bug.find({
+      _id: { $in: bugIds },
+    });
+
+    res.status(200).json(bugsList);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json("Failed to load tasks");
+  }
+};
