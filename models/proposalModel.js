@@ -35,10 +35,11 @@ const proposalSchema = new mongoose.Schema(
 
     status: {
       type: String,
+      enum: ["Pending", "Accepted", "Rejected"],
       default: "Pending",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("proposals", proposalSchema);

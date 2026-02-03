@@ -73,3 +73,24 @@ exports.editBounty = async (req, res)=>{
     res.status(500).json(err);
   }
 };
+
+//delete bounty
+
+exports.deleteBounty = async (req, res) => {
+  const { id } = req.params;
+  const userMail = req.payload;
+
+  try {
+    const bounty = await bounties.findOne({ _id: id, userMail });
+
+    if (!bounty) {
+      return res.status(403).json("Unauthorized or bounty not found");
+    }
+
+    await bounties.findByIdAndDelete(id);
+    res.status(200).json("Bounty deleted successfully");
+  } catch (err) {
+    console.error(err);
+    res.status(500).json("Failed to delete bounty");
+  }
+};

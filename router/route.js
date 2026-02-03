@@ -33,6 +33,8 @@ router.get("/api/getbounty/:id", jwtMiddleware, bountyController.getSingleBounty
 router.get("/api/mybounties", jwtMiddleware, bountyController.getMyBounties);
 router.put("/api/editbounty/:id", jwtMiddleware, bountyController.editBounty);
 module.exports = router;
+router.delete("/api/deletebounty/:id",jwtMiddleware,bountyController.deleteBounty
+);
 
 //profile
 router.get("/api/profile", jwtMiddleware, userController.getUserProfile);
@@ -46,5 +48,7 @@ router.get("/api/mytasks",jwtMiddleware,proposalController.getMyTasks);
 
 
 //admin
-router.get("/api/admin/stats",jwtMiddleware,adminController.getDashboardStats
-);
+router.get("/api/admin/stats",jwtMiddleware,adminController.getDashboardStats);
+router.get("/api/admin/users",jwtMiddleware,adminController.getAllUsers);
+router.put("/api/admin/block/:id",jwtMiddleware,adminController.blockUser);
+router.put("/api/admin/unblock/:id",jwtMiddleware,adminController.unblockUser);

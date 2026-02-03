@@ -7,12 +7,13 @@ const jwtMiddleware=(req,res,next)=>{
     const jwtverification=jwt.verify(token,process.env.jwtkey)
     console.log(jwtverification);
     req.payload=jwtverification.userMail
+    next()
     }
     catch(err){
         res.status(402).json("Authorization Error"+err) 
     }
    
     
-    next()
+    
 }
 module.exports=jwtMiddleware

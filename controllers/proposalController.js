@@ -5,8 +5,7 @@ const Bug = require("../models/bugModel");
 exports.sendProposal = async (req, res) => {
   try {
     const debuggerMail = req.payload;
-    const {bugId,message,proposedAmount,estimatedTime
-    } = req.body;
+    const { bugId, message, proposedAmount, estimatedTime } = req.body;
 
     const bug = await Bug.findById(bugId);
     if (!bug) {
@@ -16,17 +15,26 @@ exports.sendProposal = async (req, res) => {
     if (bug.userMail === debuggerMail) {
       return res.status(403).json("You cannot send a proposal to your own bug");
     }
-    const existingProposal = await Proposal.findOne({bugId,debuggerMail});
+    const existingProposal = await Proposal.findOne({ bugId, debuggerMail });
 
     if (existingProposal) {
       return res.status(400).json("You already sent a proposal for this bug");
     }
-    const newProposal = new Proposal({bugId,postedBy: bug.userMail,debuggerMail,message,proposedAmount,estimatedTime,status: "Pending"});
+    const newProposal = new Proposal({
+      bugId,
+      postedBy: bug.userMail,
+      debuggerMail,
+      message,
+      proposedAmount,
+      estimatedTime,
+      status: "Pending",
+    });
     await newProposal.save();
 
     res.status(201).json({
-      message: "Proposal sent successfully",proposal: newProposal});
-
+      message: "Proposal sent successfully",
+      proposal: newProposal,
+    });
   } catch (err) {
     res.status(500).json("Server error");
   }
@@ -35,18 +43,17 @@ exports.sendProposal = async (req, res) => {
 //get all proposals (owner view)
 exports.getBugProposals = async (req, res) => {
   try {
-    const {bugId}=req.params;
-    const userMail=req.payload;
-    const bug=await Bug.findById(bugId);
+    const { bugId } = req.params;
+    const userMail = req.payload;
+    const bug = await Bug.findById(bugId);
     if (!bug) {
       return res.status(404).json("Bug not found");
     }
     if (bug.userMail !== userMail) {
       return res.status(403).json("Access denied");
     }
-    const proposals=await Proposal.find({bugId}).sort({createdAt:-1});
+    const proposals = await Proposal.find({ bugId }).sort({ createdAt: -1 });
     res.status(200).json(proposals);
-
   } catch (err) {
     res.status(500).json("Server error");
   }
@@ -55,37 +62,41 @@ exports.getBugProposals = async (req, res) => {
 //proposal accept
 exports.acceptProposal = async (req, res) => {
   try {
-    const {proposalId} = req.params;
-    const userMail= req.payload;
+    const { proposalId } = req.params;
+    const userMail = req.payload;
     const proposal = await Proposal.findById(proposalId);
     if (!proposal) {
       return res.status(404).json("Proposal not found");
     }
-    const bug = await Bug.findById(proposal.bugId);
-    if (!bug) {
-      return res.status(404).json("Bug not found");
+
+    if (proposal.status !== "Pending") {
+      return res.status(400).json("Proposal already processed");
     }
-    if (bug.userMail !== userMail) {
-      return res.status(403).json("Unauthorized");
-    }
-    if (bug.status==="In Progress") {
-      return res.status(400).json("Bug already assigned");
+    const updatedBug = await Bug.findOneAndUpdate(
+      { _id: proposal.bugId, userMail, status: "Open" },
+      {
+        status: "In Progress",
+        assignedTo: proposal.debuggerMail,
+      },
+      { new: true },
+    );
+
+    if (!updatedBug) {
+      return res.status(400).json("Bug already assigned or unauthorized");
     }
     proposal.status = "Accepted";
     await proposal.save();
     await Proposal.updateMany(
-      {
-        bugId: bug._id,
-        _id: {$ne:proposalId},
-      },
-      { status: "Rejected" }
+      { bugId: proposal.bugId, _id: { $ne: proposalId } },
+      { status: "Rejected" },
     );
-    bug.assignedTo = proposal.debuggerMail;
-    bug.status = "In Progress";
-    await bug.save();
     res.status(200).json({
-    message: "Proposal accepted successfully",bug,proposal,});
+      message: "Proposal accepted successfully",
+      bug: updatedBug,
+      proposal,
+    });
   } catch (err) {
+    console.error(err);
     res.status(500).json("Server error");
   }
 };
@@ -93,22 +104,14 @@ exports.acceptProposal = async (req, res) => {
 //get tasks
 exports.getMyTasks = async (req, res) => {
   const debuggerMail = req.payload;
-
   try {
-    const acceptedProposals = await Proposal.find({
-      debuggerMail,
-      status: "Accepted",
-    });
-
-    const bugIds = acceptedProposals.map(p => p.bugId);
-
     const bugsList = await Bug.find({
-      _id: { $in: bugIds },
-    });
-
+      assignedTo: debuggerMail,
+      status: "In Progress",
+    }).sort({ updatedAt: -1 });
     res.status(200).json(bugsList);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json("Failed to load tasks");
   }
 };

@@ -1,83 +1,107 @@
-const User =require('../models/userModel')
-const jwt =require('jsonwebtoken')
-//Logic for register
+const User = require("../models/userModel");
+const jwt = require("jsonwebtoken");
 
-exports.userRegister=async(req,res)=>{
-    const {username,email,password}=req.body;
-    try{
-        const existingUser=await User.findOne({email})
-        if(existingUser){
-            res.status(400).json("User already exist")
-        }
-        else{
-            const newUser= new User({username,email,password})
-            await newUser.save()
-            res.status(200).json({message:"Register success",newUser})
+//register
+exports.userRegister = async (req, res) => {
+  const { username, email, password } = req.body;
 
-        }
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json("User already exist");
     }
-    catch (error) {
-     res.status(500).json(error);
-}
-}
 
-// Login
+    const newUser = new User({ username, email, password });
+    await newUser.save();
 
-exports.userLogin=async(req,res)=>{
-    const{email,password}=req.body
-    try{
-        const existingUser=await User.findOne({email})
-        if(existingUser){
-        if(existingUser.password==password){
-            // token generation
-            const token =jwt.sign({userMail:existingUser.email,role:existingUser.role},process.env.jwtkey)
-            console.log(token);
-            
-             res.status(200).json({message:"login success",existingUser,token});
-        }
-        else{
-            res.status(401).json("password mismatch")
-        }
-    }
-    else{
-        res.status(401).json("user not found")
+    res.status(200).json({ message: "Register success", newUser });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
 
+//login
+exports.userLogin = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const existingUser = await User.findOne({ email });
+    if (!existingUser) {
+      return res.status(401).json("User not found");
     }
+    if (existingUser.password !== password) {
+      return res.status(401).json("Password mismatch");
     }
-    catch (error) {
-     res.status(500).json({ error: " error" });
-}
-}
+    if (existingUser.isBlocked) {
+      return res.status(403).json("Your account has been blocked by admin");
+    }
+    const token = jwt.sign(
+      {
+        userMail: existingUser.email,
+        role: existingUser.role,
+      },
+      process.env.jwtkey,
+    );
+    res.status(200).json({
+      message: "Login success",
+      existingUser,
+      token,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Login error" });
+  }
+};
 
 //google login
-exports.googleUserLogin=async(req,res)=>{
-    const{username,email,password,profile}=req.body
-    try{
-        const existingUser=await User.findOne({email})
-        if(existingUser){      
-            // token generation
-            const token =jwt.sign({userMail:existingUser.email,role:existingUser.role},process.env.jwtkey)
-            console.log(token);
-             res.status(200).json({message:"login success",existingUser,token});
-        }
-        else{
-            const newUser= new User({username,email,password,profile})
-            await newUser.save()
-            // token generation
-            const token =jwt.sign({userMail:newUser.email,role:newUser.role},process.env.jwtkey)
-            console.log(token);
-            res.status(200).json({message:"user added successfully",newUser,token});
-        }
+exports.googleUserLogin = async (req, res) => {
+  const { username, email, password, profile } = req.body;
+  try {
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      if (existingUser.isBlocked) {
+        return res.status(403).json("Your account has been blocked by admin");
+      }
+      const token = jwt.sign(
+        {
+          userMail: existingUser.email,
+          role: existingUser.role,
+        },
+        process.env.jwtkey,
+      );
+      return res.status(200).json({
+        message: "Login success",
+        existingUser,
+        token,
+      });
     }
-    catch (error) {
-     res.status(500).json({ error: " error" });
-}
-}
+    const newUser = new User({
+      username,
+      email,
+      password,
+      profile,
+    });
+    await newUser.save();
+    const token = jwt.sign(
+      {
+        userMail: newUser.email,
+        role: newUser.role,
+      },
+      process.env.jwtkey,
+    );
+    res.status(200).json({
+      message: "User added successfully",
+      newUser,
+      token,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Google login error" });
+  }
+};
 
-//profile 
-
+// getprofile
 exports.getUserProfile = async (req, res) => {
   const userMail = req.payload;
+
   try {
     const user = await User.findOne({ email: userMail }).select("-password");
     if (!user) {
@@ -89,19 +113,20 @@ exports.getUserProfile = async (req, res) => {
   }
 };
 
+//update profile
 exports.updateProfile = async (req, res) => {
   const userMail = req.payload;
-    const {username,title,bio,github,linkedin,password} = req.body;
-  const profile = req.file? req.file.filename: req.body.profile;
+  const { username, title, bio, github, linkedin, password } = req.body;
+  const profile = req.file ? req.file.filename : req.body.profile;
   try {
-    const updateData = {username,title,bio,github,linkedin,profile};
+    const updateData = { username, title, bio, github, linkedin, profile };
     if (password && password.trim() !== "") {
       updateData.password = password;
     }
     const updatedUser = await User.findOneAndUpdate(
       { email: userMail },
       updateData,
-      { new: true }
+      { new: true },
     );
     if (!updatedUser) {
       return res.status(404).json("User not found");
@@ -112,6 +137,7 @@ exports.updateProfile = async (req, res) => {
   }
 };
 
+// get leaderboard
 exports.getLeaderboard = async (req, res) => {
   try {
     const users = await User.find(
@@ -122,9 +148,9 @@ exports.getLeaderboard = async (req, res) => {
         points: 1,
         rating: 1,
         totalFixes: 1,
-      }
+      },
     )
-      .sort({ points: -1})
+      .sort({ points: -1 })
       .limit(5);
 
     res.status(200).json(users);
