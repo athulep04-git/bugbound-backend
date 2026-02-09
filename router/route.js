@@ -15,6 +15,7 @@ router.post("/api/register", userController.userRegister);
 router.post("/api/login", userController.userLogin);
 router.post('/api/googlelogin',userController.googleUserLogin)
 router.get("/api/leaderboard", userController.getLeaderboard);
+router.post("/api/rate-debugger", jwtMiddleware, userController.rateDebugger);
 
 //bug
 router.post('/api/addbug',jwtMiddleware,multerConfig.array('UploadedImages',3),bugController.addBug)
@@ -23,7 +24,13 @@ router.get("/api/getbug/:id", jwtMiddleware, bugController.getBugDetails);
 router.get("/api/mybugs", jwtMiddleware, bugController.getMyBugs);
 router.put("/api/editbug/:id", jwtMiddleware, bugController.editBug);
 router.delete("/api/deletebug/:id", jwtMiddleware, bugController.deleteBug);
+
+//fixworkspace
+
 router.get("/api/fixworkspace/:bugId",jwtMiddleware,fixWorkspaceController.getWorkspace);
+router.put("/api/mark-fixed/:bugId",jwtMiddleware,fixWorkspaceController.markAsFixed);
+router.put("/api/approve-fix/:bugId",jwtMiddleware,fixWorkspaceController.approveBug
+);
 
 
 //bounty

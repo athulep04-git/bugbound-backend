@@ -36,6 +36,7 @@ const bugSchema = new mongoose.Schema(
 
     status: {
       type: String,
+      enum: ["Open", "In Progress", "Fixed", "Completed"],
       default: "Open",
     },
 
@@ -48,8 +49,12 @@ const bugSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    ratingGiven: {
+      type: Boolean,
+      default: false,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("bugs", bugSchema);
