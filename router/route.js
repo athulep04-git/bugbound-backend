@@ -1,5 +1,6 @@
 const express = require("express");
 //controllers
+const messageController=require("../controllers/messageController")
 const userController = require("../controllers/userController");
 const bugController=require('../controllers/bugController');
 const bountyController = require("../controllers/bountyController");
@@ -59,3 +60,7 @@ router.get("/api/admin/stats",jwtMiddleware,adminController.getDashboardStats);
 router.get("/api/admin/users",jwtMiddleware,adminController.getAllUsers);
 router.put("/api/admin/block/:id",jwtMiddleware,adminController.blockUser);
 router.put("/api/admin/unblock/:id",jwtMiddleware,adminController.unblockUser);
+
+
+//message
+router.get("/api/messages/:bugId", jwtMiddleware,messageController.getMessages);
