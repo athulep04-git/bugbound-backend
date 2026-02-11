@@ -53,6 +53,14 @@ const bugSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    paymentDone: {
+      type: Boolean,
+      default: false,
+    },
+    paidBy: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true },
 );
