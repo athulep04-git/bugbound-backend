@@ -1,3 +1,6 @@
+
+const stripe = require('stripe')(process.env.paymentkey);
+
 const bugs = require("../models/bugModel");
 const proposals = require("../models/proposalModel");
 
@@ -27,6 +30,8 @@ exports.getWorkspace = async (req, res) => {
       assignedTo: acceptedProposal.debuggerMail,
       estimatedTime: acceptedProposal.estimatedTime,
       ratingGiven: bug.ratingGiven,
+      paymentDone: bug.paymentDone,
+      paidBy: bug.paidBy,
     });
   } catch (err) {
     res.status(500).json("Server error");
@@ -89,3 +94,34 @@ exports.approveBug = async (req, res) => {
   }
 };
 
+exports.makepayment = async (req, res) => {
+  console.log("inside payment");
+  const { workspaceDetails } = req.body;
+  const userMail = req.payload;
+  try {
+    const updatedBug = await bugs.findByIdAndUpdate(
+      workspaceDetails._id,
+      {
+        paymentDone: true,
+        paidBy: userMail
+      },
+      { new: true }
+    );
+    const session = await stripe.checkout.sessions.create({
+  payment_method_types:['card'],
+  success_url: 'https://bookstore-frontend-design-only.vercel.app/payment-success',
+  cancel_url:'https://bookstore-frontend-design-only.vercel.app/payment-error',
+  line_items,
+  mode: 'payment',
+});
+
+    res.status(200).json({
+      message: "Payment released successfully",
+      bug: updatedBug
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json("Payment failed");
+  }
+};
