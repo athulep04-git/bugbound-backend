@@ -66,6 +66,9 @@ router.put("/api/admin/unblock/:id",jwtMiddleware,adminController.unblockUser);
 router.get("/api/messages/:bugId", jwtMiddleware,messageController.getMessages);
 
 
-// router.put("/api/confirm-payment/:bugId",jwtMiddleware,fixWorkspaceController.confirmPayment);
+
 router.put("/api/makepayment",jwtMiddleware,fixWorkspaceController.makepayment
+);
+
+router.put("/api/confirm-payment/:bugId",jwtMiddleware,fixWorkspaceController.confirmPayment
 );
