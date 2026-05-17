@@ -99,6 +99,9 @@ exports.makepayment = async (req, res) => {
   const { workspaceDetails } = req.body;
   const userMail = req.payload;
   try {
+    const bug = await bugs.findById(
+      workspaceDetails._id
+    );
     const updatedBug = await bugs.findByIdAndUpdate(
       workspaceDetails._id,
       {
@@ -107,19 +110,38 @@ exports.makepayment = async (req, res) => {
       },
       { new: true }
     );
-    const session = await stripe.checkout.sessions.create({
-  payment_method_types:['card'],
-  success_url: 'https://bookstore-frontend-design-only.vercel.app/payment-success',
-  cancel_url:'https://bookstore-frontend-design-only.vercel.app/payment-error',
-  line_items,
-  mode: 'payment',
-});
-
-    res.status(200).json({
-      message: "Payment released successfully",
+    const line_items = [
+      {
+        price_data: {
+          currency: "inr",
+          product_data: {
+            name: bug.title,
+            description:
+              `Payment for fixing bug by ${bug.assignedTo}`,
+            metadata: {
+              bugId: bug._id.toString(),
+              debuggerMail: bug.assignedTo,
+              ownerMail: bug.userMail,
+            },
+          },
+          unit_amount: Math.round(
+            Number(bug.fixBudget) * 100
+          ),
+        },
+        quantity: 1,
+      },
+    ];
+    const session =await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        success_url:"http://localhost:5173/payment-success",
+        cancel_url:"http://localhost:5173/payment-fail",
+        line_items,
+        mode: "payment",
+      });
+    res.status(200).json({message:"success",session,
+      sessionId: session.id,
       bug: updatedBug
     });
-
   } catch (err) {
     console.log(err);
     res.status(500).json("Payment failed");
