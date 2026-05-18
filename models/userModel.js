@@ -67,7 +67,10 @@ const userSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-
+    totalRatings: {
+    type: Number,
+    default: 0,
+    },
     totalFixes: {
       type: Number,
       default: 0,

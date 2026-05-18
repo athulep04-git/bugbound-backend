@@ -75,9 +75,10 @@ exports.acceptProposal = async (req, res) => {
     const updatedBug = await Bug.findOneAndUpdate(
       { _id: proposal.bugId, userMail, status: "Open" },
       {
-        status: "In Progress",
-        assignedTo: proposal.debuggerMail,
-      },
+  status: "In Progress",
+  assignedTo: proposal.debuggerMail,
+  deadline: new Date(Date.now() +parseInt(proposal.estimatedTime) *60 *60 *1000)
+},
       { new: true },
     );
 

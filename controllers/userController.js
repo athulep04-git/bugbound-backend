@@ -165,50 +165,42 @@ exports.rateDebugger = async (req, res) => {
   try {
     const { debuggerMail, rating, bugId } = req.body;
     const userMail = req.payload;
-
-    const numericRating = Number(rating);
+    const numericRating=Number(rating);
     if (!numericRating || numericRating < 1 || numericRating > 5) {
       return res.status(400).json("Invalid rating value");
     }
-
     const bug = await Bugs.findById(bugId);
     if (!bug) return res.status(404).json("Bug not found");
-
     if (bug.userMail !== userMail) {
       return res.status(403).json("Access denied");
     }
-
     if (bug.status !== "Completed") {
-      return res.status(400).json("Bug not completed yet");
+     return res.status(400).json("Bug not completed yet");
     }
-
+    if (!bug.paymentDone) {
+      return res.status(400).json("Complete payment first");
+    }
     if (bug.ratingGiven) {
       return res.status(400).json("Rating already submitted");
     }
-
     const debuggerUser = await User.findOne({ email: debuggerMail });
     if (!debuggerUser) {
       return res.status(404).json("Debugger not found");
     }
-
-    const totalFixes = debuggerUser.totalFixes + 1;
-    const newRating =
-      (debuggerUser.rating * debuggerUser.totalFixes + numericRating) /
-      totalFixes;
-
-    debuggerUser.totalFixes = totalFixes;
-    debuggerUser.rating = Number(newRating.toFixed(1));
-    debuggerUser.points += numericRating * 10;
-
-    await debuggerUser.save();
-
-    bug.ratingGiven = true;
-    await bug.save();
-
-    res.status(200).json("Rating submitted successfully");
-  } catch (err) {
-    console.error(err);
-    res.status(500).json("Failed to submit rating");
-  }
-};
+  const totalRatings =debuggerUser.totalRatings;
+  const newRating =(debuggerUser.rating *totalRatings +numericRating) /(totalRatings + 1);
+  debuggerUser.rating =
+  Number(newRating.toFixed(1));
+  debuggerUser.totalRatings += 1;
+  debuggerUser.totalFixes += 1;
+  debuggerUser.points +=numericRating*10;
+      await debuggerUser.save();
+      bug.ratingGiven = true;
+      await bug.save();
+      res.status(200).json("Rating submitted successfully");
+    } catch (err) {
+      console.error(err);
+      res.status(500).json("Failed to submit rating");
+    }
+  };
 

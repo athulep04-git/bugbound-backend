@@ -32,6 +32,7 @@ exports.getWorkspace = async (req, res) => {
       ratingGiven: bug.ratingGiven,
       paymentDone: bug.paymentDone,
       paidBy: bug.paidBy,
+      deadline: bug.deadline,
     });
   } catch (err) {
     res.status(500).json("Server error");

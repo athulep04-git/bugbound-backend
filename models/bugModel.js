@@ -61,6 +61,10 @@ const bugSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    deadline: {
+      type: Date,
+      default: null,
+},
   },
   { timestamps: true },
 );
